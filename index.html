@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aqlli qo'ng'iroq — maktab jadvali</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <!-- Chap panel: Boshqaruv va Soat -->
+  <div class="left-panel">
+    <header>
+      <h1><span class="bell-mark">🔔</span>Aqlli qo'ng'iroq</h1>
+      <button class="theme-btn" id="themeBtn" title="Mavzuni almashtirish">◐</button>
+    </header>
+
+    <div class="hero card">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 240 240">
+          <circle class="ring-track" cx="120" cy="120" r="105"></circle>
+          <circle class="ring-progress" id="ringProgress" cx="120" cy="120" r="105"
+                  stroke-dasharray="659.7" stroke-dashoffset="659.7"></circle>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-status" id="statusLabel">Kutilmoqda</div>
+          <div class="ring-time" id="timeLabel">--:--</div>
+          <div class="ring-sub" id="subLabel">jadval kutilmoqda</div>
+        </div>
+      </div>
+      <div class="next-up" id="nextUp">&nbsp;</div>
+    </div>
+
+    <div class="controls card">
+      <div class="field">
+        <label for="startTime">Boshlanish</label>
+        <input type="time" id="startTime" value="08:30">
+      </div>
+      <button class="action" id="applyBtn">Jadval tuzish</button>
+      
+      <div class="toggle-row" style="margin-left: auto;">
+        <span>Ovoz</span>
+        <div class="switch on" id="soundSwitch"><div class="knob"></div></div>
+      </div>
+    </div>
+    
+    <div id="audioStatus" style="text-align:center; font-size:12px; color:var(--alert); margin-bottom: 20px; min-height:16px;"></div>
+
+    <div class="controls card" style="justify-content: space-between;">
+      <div class="field" style="font-size:14px; color:var(--ink);">
+        <span>🎵</span> <span>Tanaffus musiqasi</span>
+      </div>
+      <button class="action ghost" id="musicBtn">▶ Yoqish</button>
+    </div>
+
+    <div class="controls card" style="justify-content: space-between;">
+      <div class="field" style="font-size:14px; color:var(--ink);">
+        <span>🇺🇿</span> <span>Davlat Madhiyasi</span>
+      </div>
+      <button class="action ghost" id="anthemBtn">▶ Tinglash</button>
+    </div>
+    
+    <div class="controls card" style="justify-content: center;">
+      <button class="action ghost" id="testBellBtn" style="width:100%;">Sinov qo'ng'irog'i 🔔</button>
+    </div>
+
+    <footer>
+      9 ta dars × 45 daqiqa · 5-darsdan so'ng 45 daqiqalik tanaffus.<br>
+      Sahifa ochiq turganda dars jadvali bo'yicha qo'ng'iroq va e'lonlar avtomatik ishlaydi.
+    </footer>
+  </div>
+
+  <!-- O'ng panel: Timeline (Vaqt o'qi) -->
+  <div class="right-panel">
+    <h2 class="timeline-heading">Kunlik jadval (9 soat)</h2>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
