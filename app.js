@@ -75,7 +75,6 @@
   breakEndAudio.preload = 'auto';
 
   const musicAudio = new Audio('music.mp3');
-  musicAudio.loop = true;
   musicAudio.preload = 'auto'; // Faylni oldindan yuklab tayyorlab turish
   let musicOn = false;
   let musicTimeout = null;
@@ -134,13 +133,23 @@
     $('anthemBtn').textContent = '▶ Tinglash';
   };
 
+  let extraBells = [];
   function playBell() {
+    bellAudio.volume = 1.0; 
+    bellAudio.loop = true; // Fayl qisqa bo'lsa belgilangan vaqtgacha tinmay aylanishi uchun
     bellAudio.currentTime = 0;
+    
+    // Ovozni sun'iy ravishda maksimal darajadan ham baland qilish uchun faylni bir vaqtda 3 marta chalamiz (kuchaytiramiz)
+    extraBells.forEach(b => { b.pause(); b.currentTime = 0; });
+    extraBells = [new Audio('bell.mp3'), new Audio('bell.mp3'), new Audio('bell.mp3')];
+    extraBells.forEach(b => { b.volume = 1.0; b.loop = true; b.play().catch(e=>console.log(e)); });
+
     bellAudio.play().then(() => {
       setTimeout(() => {
         bellAudio.pause();
         bellAudio.currentTime = 0;
-      }, 7000);
+        extraBells.forEach(b => { b.pause(); b.currentTime = 0; });
+      }, 12000); // 12 soniyaga cho'zildi
     }).catch(e => {
       audioStatus.textContent = "Brauzer avtomatik ovozni blokladi, iltimos tugmani bosing!";
       setTimeout(() => audioStatus.textContent = "", 4000);
@@ -160,14 +169,14 @@
       
       setTimeout(() => {
         if (myVersion !== scheduleVersion) return;
-        musicAudio.volume = 1.0; 
+        musicAudio.volume = 0.4; // Qo'ng'iroq va e'lon balandroq bo'lishi uchun musiqa ovozi 40% ga tushirildi
         musicAudio.currentTime = 0; 
         toggleMusic(true);
         
         if (musicTimeout) clearTimeout(musicTimeout);
         musicTimeout = setTimeout(() => {
           if (myVersion === scheduleVersion) toggleMusic(false);
-        }, 5 * 60 * 1000);
+        }, 3 * 60 * 1000); // 3 daqiqalik cheklov
       }, 1000);
 
       setTimeout(() => {
@@ -176,15 +185,15 @@
         $('musicBtn').textContent = '▶ Yoqish';
         breakStartAudio.currentTime = 0;
         breakStartAudio.play().catch(e => console.log(e));
-      }, 7500);
+      }, 12500); // 12 soniyalik qo'ng'iroq tugagach e'lon
 
       setTimeout(() => {
         if (myVersion !== scheduleVersion) return;
-        if (soundOn && musicTimeout) {
+        if (soundOn) { // musicTimeout sharti olib tashlandi, musiqa oxirigacha chalinadi
           musicAudio.play().catch(e => console.log(e));
           $('musicBtn').textContent = '⏸ To\'xtatish';
         }
-      }, 16000);
+      }, 21000); // E'lon tugagach davom etadi
     };
   }
 
@@ -267,21 +276,21 @@
     }
     if (activeEv && activeEv.type === 'break' && soundOn) {
       const elapsedSecs = ((currentMins - activeEv.startMins) * 60) + currentSecs;
-      if (elapsedSecs >= 16 && elapsedSecs < 300) {
+      if (elapsedSecs >= 21 && elapsedSecs < 180) { // 3 daqiqa
         musicAudio.currentTime = elapsedSecs; // Roppa-rosa o'sha joyidan boshlash
         toggleMusic(true);
-        const msLeft = (300 - elapsedSecs) * 1000;
+        const msLeft = (180 - elapsedSecs) * 1000;
         if (musicTimeout) clearTimeout(musicTimeout);
         musicTimeout = setTimeout(() => { toggleMusic(false); }, msLeft);
-      } else if (elapsedSecs < 16) {
+      } else if (elapsedSecs < 21) {
         setTimeout(() => {
           if (soundOn) {
-            musicAudio.currentTime = 16;
+            musicAudio.currentTime = 21;
             toggleMusic(true);
             if (musicTimeout) clearTimeout(musicTimeout);
-            musicTimeout = setTimeout(() => { toggleMusic(false); }, (300 - 16) * 1000);
+            musicTimeout = setTimeout(() => { toggleMusic(false); }, (180 - 21) * 1000);
           }
-        }, (16 - elapsedSecs) * 1000);
+        }, (21 - elapsedSecs) * 1000);
       }
     }
   }
@@ -381,14 +390,14 @@
             // 1. Musiqa qo'ng'iroqdan so'ng darhol boshlanadi
             setTimeout(() => {
               if (myVersion !== scheduleVersion) return;
-              musicAudio.volume = 1.0; 
+              musicAudio.volume = 0.4; // Qo'ng'iroq balandroq eshitilishi uchun musiqa ovozi pasaytirildi
               musicAudio.currentTime = 0; 
               toggleMusic(true);
-              
+
               if (musicTimeout) clearTimeout(musicTimeout);
               musicTimeout = setTimeout(() => {
                 if (myVersion === scheduleVersion) toggleMusic(false);
-              }, 5 * 60 * 1000);
+              }, 3 * 60 * 1000); // 3 daqiqalik cheklov
             }, 1000);
 
             // 2. E'lon boshlanganda musiqani to'xtatib turish (pause)
@@ -398,16 +407,16 @@
               $('musicBtn').textContent = '▶ Yoqish';
               breakStartAudio.currentTime = 0;
               breakStartAudio.play().catch(e => console.log(e));
-            }, 7500);
+            }, 12500);
 
             // 3. E'lon tugagach musiqani to'xtagan joyidan davom ettirish
             setTimeout(() => {
               if (myVersion !== scheduleVersion) return;
-              if (soundOn && musicTimeout) {
+              if (soundOn) {
                 musicAudio.play().catch(e => console.log(e));
                 $('musicBtn').textContent = '⏸ To\'xtatish';
               }
-            }, 16000);
+            }, 21000);
 
           } else if (announcement === 'break_end') {
             // Tanaffus tugasa musiqani to'xtatish
@@ -418,7 +427,7 @@
               if (myVersion !== scheduleVersion) return;
               breakEndAudio.currentTime = 0;
               breakEndAudio.play().catch(e => console.log(e));
-            }, 7500);
+            }, 12500);
           } else {
              // Boshqa barcha holatlarda (1-dars boshlanishi, uyga ketish)
              if (musicTimeout) clearTimeout(musicTimeout);
